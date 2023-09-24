@@ -1,0 +1,8 @@
+Website = "https://github.com/taofit/golang-password-manager"
+
+[Details]
+  Icon = "assets/Icon.png"
+  Name = "PassTrust"
+  ID = "com.passtrust.app"
+  Version = "1.0.0"
+  Build = 7
