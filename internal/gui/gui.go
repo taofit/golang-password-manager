@@ -2,7 +2,6 @@ package gui
 
 import (
 	"errors"
-	"image/color"
 	"log"
 	"os"
 
@@ -28,19 +27,7 @@ func NewGui(win fyne.Window) *gui {
 }
 
 func (g *gui) MakeGUI() fyne.CanvasObject {
-	top := makeBanner()
-	left := widget.NewLabel("Left")
-	right := widget.NewLabel("Right")
-	directory := widget.NewLabelWithData(g.title)
-	content := container.NewStack(canvas.NewRectangle(color.Gray{Y: 0xEE}), directory)
-
-	// return container.NewBorder(makeBanner(), nil, left, right, content)
-	dividers := [3]fyne.CanvasObject{
-		widget.NewSeparator(), widget.NewSeparator(), widget.NewSeparator(),
-	}
-	objs := []fyne.CanvasObject{content, top, left, right, dividers[0], dividers[1], dividers[2]}
-
-	return container.New(newAppLayout(top, left, right, content, dividers), objs...)
+	return appEntryContent(g.createLogin)
 }
 
 func (g *gui) BindWindowTitle() {
@@ -68,7 +55,6 @@ func (g *gui) OpenFolderDialog() {
 			dialog.ShowError(err, g.win)
 			return
 		}
-		log.Println(dir)
 		if dir == nil {
 			return
 		}
@@ -78,40 +64,20 @@ func (g *gui) OpenFolderDialog() {
 
 func (g *gui) OpenFolder(dir fyne.ListableURI) {
 	name := dir.Name()
-	// g.win.SetTitle("Password App: " + name)
 	g.title.Set(name)
 }
 
 func (g *gui) MakeMenu() *fyne.MainMenu {
 	items := fyne.NewMenu(
 		"File",
-		fyne.NewMenuItem("Open project", g.OpenFolderDialog),
+		fyne.NewMenuItem("Open file", g.OpenFolderDialog),
 	)
 
 	return fyne.NewMainMenu(items)
 }
 
-func (g *gui) ShowAndCreate() {
-	var wizard *dialogs.Wizard
-	intro := widget.NewLabel(`creating a new project here!!!
-or open an existing one that is created earlier 
-	`)
+func (g *gui) ShowAndRun() {
 
-	open := widget.NewButton("Open Project", func() {
-		wizard.Hide()
-		g.OpenFolderDialog()
-	})
-	create := widget.NewButton("Create Project", func() {
-		wizard.Push("Project details", g.makeCreateDetail(wizard))
-	})
-	create.Importance = widget.HighImportance
-
-	buttons := container.NewGridWithColumns(2, open, create)
-
-	homeContent := container.NewVBox(intro, buttons)
-	wizard = dialogs.NewWizard("create project", homeContent)
-	wizard.Show(g.win)
-	wizard.Resize(homeContent.MinSize().AddWidthHeight(40, 80))
 }
 
 func (g *gui) makeCreateDetail(wizard *dialogs.Wizard) fyne.CanvasObject {
