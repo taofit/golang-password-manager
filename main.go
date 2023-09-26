@@ -11,11 +11,11 @@ func main() {
 	a.Settings().SetTheme(gui.NewAppTheme())
 	w := a.NewWindow("Password Manager App")
 	w.Resize(fyne.NewSize(1024, 768))
+
 	ui := gui.NewGui(w)
 	ui.BindWindowTitle()
 	w.SetMainMenu(ui.MakeMenu())
-	w.SetContent(ui.MakeGUI())
-
+	ui.MakeGUI()
 	ui.ShowAndRun()
 
 	w.ShowAndRun()

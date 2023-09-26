@@ -15,7 +15,7 @@ func (g *gui) createLogin() *fyne.Container {
 	loginLabel := widget.NewLabelWithStyle("LOG IN", fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
 	loginLabel.Importance = widget.HighImportance
 	registerBtn := widget.NewButton("go to register", func() {
-		g.appEntryContent(g.createRegister)
+		g.makeAppContentView(g.createRegister)
 	})
 	loginAndRgt := container.NewBorder(nil, nil, loginLabel, registerBtn, widget.NewSeparator())
 
@@ -26,6 +26,7 @@ func (g *gui) createLogin() *fyne.Container {
 	btn := widget.NewButton("log in", func() {
 		// userName.Text
 		// password.Text
+		g.makeAppContentView(g.createCategoryContent)
 	})
 
 	objects := []fyne.CanvasObject{
@@ -47,7 +48,7 @@ func (g *gui) createRegister() *fyne.Container {
 	registerLabel.Importance = widget.HighImportance
 
 	loginBtn := widget.NewButton("go to log in", func() {
-		g.appEntryContent(g.createLogin)
+		g.makeAppContentView(g.createLogin)
 	})
 	loginAndRgt := container.NewBorder(nil, nil, registerLabel, loginBtn, widget.NewSeparator())
 
@@ -71,14 +72,10 @@ func (g *gui) createRegister() *fyne.Container {
 	return container.NewCenter(registerArea)
 }
 
-func (g *gui) appEntryContent(entryFunc func() *fyne.Container) {
-	g.win.SetContent(appEntryContent(entryFunc))
-}
-
-func appEntryContent(entryFunc func() *fyne.Container) fyne.CanvasObject {
+func (g *gui) makeAppContentView(entryFunc func() *fyne.Container) {
 	top := makeBanner()
 	content := container.NewStack()
 	content.Objects = []fyne.CanvasObject{canvas.NewRectangle(color.Gray{Y: 0xEE}), entryFunc()}
 
-	return container.NewBorder(top, nil, nil, nil, content)
+	g.win.SetContent(container.NewBorder(top, nil, nil, nil, content))
 }
