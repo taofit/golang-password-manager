@@ -4,7 +4,7 @@ import (
 	"github.com/taofit/golang-password-manager/internal/fileStorage"
 )
 
-var CategoryList = []string{"password", "note"}
+var DefaultCateList = []string{"password", "credit card", "note", "identity", "software license", "connections"}
 
 type category struct {
 	name string
@@ -32,7 +32,7 @@ func AddCategory(accName string, cateName string) error {
 }
 
 func SaveCategories(accName string) error {
-	for _, cate := range CategoryList {
+	for _, cate := range DefaultCateList {
 		err := AddCategory(accName, cate)
 		if err != nil {
 			return err

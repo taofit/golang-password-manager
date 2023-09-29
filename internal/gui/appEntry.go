@@ -66,7 +66,7 @@ func (g *gui) generateRegister() *fyne.Container {
 		if err != nil {
 			log.Println("error from creating account", account, err)
 		}
-		g.accName = name
+		g.setAccount(account.Name, account.Password, account.CategoryList)
 		category.SaveCategories(name)
 		g.makeAppContentView(g.generateCategory)
 	})

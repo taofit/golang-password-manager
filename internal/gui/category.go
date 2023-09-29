@@ -23,7 +23,6 @@ import (
 // }
 
 func (g *gui) generateCategory() *fyne.Container {
-	g.fetchDefaultCategories()
 	list := g.generateCategoryList()
 	addBtn := widget.NewButtonWithIcon("add new category", theme.ContentAddIcon(), func() {
 		g.AddCategory()
@@ -35,7 +34,7 @@ func (g *gui) generateCategory() *fyne.Container {
 }
 
 func (g *gui) generateCategoryList() *widget.List {
-	g.categoryListBindData = binding.BindStringList(&g.categoryList)
+	g.categoryListBindData = binding.BindStringList(&g.account.categoryList)
 	list := widget.NewListWithData(g.categoryListBindData,
 		func() fyne.CanvasObject {
 			return widget.NewLabel("category item")
@@ -47,10 +46,6 @@ func (g *gui) generateCategoryList() *widget.List {
 	return list
 }
 
-func (g *gui) fetchDefaultCategories() {
-	g.categoryList = c.CategoryList
-}
-
 func (g *gui) AddCategory() {
 	name := "category name"
 	// category := category{name: "category name", key: "category key"}
@@ -58,5 +53,5 @@ func (g *gui) AddCategory() {
 	// popup := widget.NewModalPopUp(widget.NewEntry(), g.win.Canvas())
 	// popup.Show()
 	g.categoryListBindData.Append(name)
-	c.AddCategory(g.accName, name)
+	c.AddCategory(g.account.accName, name)
 }

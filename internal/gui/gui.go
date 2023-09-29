@@ -17,9 +17,15 @@ type gui struct {
 	win   fyne.Window
 	title binding.String
 	// categories           categoryList
-	categoryList         []string
-	accName              string
+	// accName              string
+	account              Account
 	categoryListBindData binding.ExternalStringList
+}
+
+type Account struct {
+	accName      string
+	password     string //TODO will be removed
+	categoryList []string
 }
 
 func NewGui(win fyne.Window) *gui {
@@ -82,6 +88,10 @@ func (g *gui) makeAppContentView(entryFunc func() *fyne.Container) {
 	content.Objects = []fyne.CanvasObject{canvas.NewRectangle(color.Gray{Y: 0xEE}), entryFunc()}
 
 	g.win.SetContent(container.NewBorder(top, nil, nil, nil, content))
+}
+
+func (g *gui) setAccount(name string, password string, cateList []string) {
+	g.account = Account{accName: name, password: password, categoryList: cateList}
 }
 
 func (g *gui) ShowAndRun() {

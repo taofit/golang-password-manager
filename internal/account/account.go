@@ -6,39 +6,49 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/storage"
+	"github.com/taofit/golang-password-manager/internal/category"
 	"github.com/taofit/golang-password-manager/internal/fileStorage"
 )
 
 type account struct {
-	Name     string
-	Password string
+	Name         string   `json:"name"`
+	Password     string   `json:"password"`
+	CategoryList []string `json:"categoryList"`
 }
 
 func newAccount(name string, password string) account {
-	return account{Name: name, Password: password}
+	return newAccountWithCateList(name, password, []string{})
 }
 
-func SaveAccount(name string, password string) (fyne.URI, error) {
-	acc := newAccount(name, password)
+func newAccountWithCateList(name string, password string, categoryList []string) account {
+	if len(categoryList) == 0 {
+		return account{Name: name, Password: password, CategoryList: category.DefaultCateList}
+	}
+	return account{Name: name, Password: password, CategoryList: category.DefaultCateList} //TODO fetch categorylist from the storage
+}
+
+func SaveAccount(name string, password string) (account, error) {
+	acc := account{}
 	accFileURI, err := getAccountURI(name)
 	if err != nil {
-		return nil, err
+		return acc, err
 	}
 	ok, err := storage.CanWrite(accFileURI)
 	if err != nil {
-		return nil, err
+		return acc, err
 	}
 	if !ok {
-		return nil, fmt.Errorf("can not write to file: %s", accFileURI)
+		return acc, fmt.Errorf("can not write to file: %s", accFileURI)
 	}
 	w, err := storage.Writer(accFileURI)
 	if err != nil {
-		return nil, err
+		return acc, err
 	}
 	defer w.Close()
+	acc = newAccount(name, password)
 	err = json.NewEncoder(w).Encode(acc)
 
-	return accFileURI, err
+	return acc, err
 }
 
 func getAccountURI(name string) (fyne.URI, error) {
