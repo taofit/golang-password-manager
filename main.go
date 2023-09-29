@@ -3,11 +3,16 @@ package main
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+
 	"github.com/taofit/golang-password-manager/internal/gui"
 )
 
+type me struct {
+	mehehe string
+}
+
 func main() {
-	a := app.New()
+	a := app.NewWithID("com.passportal.app")
 	a.Settings().SetTheme(gui.NewAppTheme())
 	w := a.NewWindow("Password Manager App")
 	w.Resize(fyne.NewSize(1024, 768))

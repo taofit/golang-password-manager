@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"image/color"
 	"log"
 
 	"fyne.io/fyne/v2"
@@ -15,6 +16,10 @@ import (
 type gui struct {
 	win   fyne.Window
 	title binding.String
+	// categories           categoryList
+	categoryList         []string
+	accName              string
+	categoryListBindData binding.ExternalStringList
 }
 
 func NewGui(win fyne.Window) *gui {
@@ -22,7 +27,7 @@ func NewGui(win fyne.Window) *gui {
 }
 
 func (g *gui) MakeGUI() {
-	g.makeAppContentView(g.createLogin)
+	g.makeAppContentView(g.generateLogin)
 }
 
 func (g *gui) BindWindowTitle() {
@@ -69,6 +74,14 @@ func (g *gui) MakeMenu() *fyne.MainMenu {
 	)
 
 	return fyne.NewMainMenu(items)
+}
+
+func (g *gui) makeAppContentView(entryFunc func() *fyne.Container) {
+	top := makeBanner()
+	content := container.NewStack()
+	content.Objects = []fyne.CanvasObject{canvas.NewRectangle(color.Gray{Y: 0xEE}), entryFunc()}
+
+	g.win.SetContent(container.NewBorder(top, nil, nil, nil, content))
 }
 
 func (g *gui) ShowAndRun() {
