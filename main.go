@@ -18,7 +18,6 @@ func main() {
 	w.Resize(fyne.NewSize(1024, 768))
 
 	ui := gui.NewGui(w)
-	ui.BindWindowTitle()
 	w.SetMainMenu(ui.MakeMenu())
 	ui.MakeGUI()
 	ui.ShowAndRun()

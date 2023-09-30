@@ -14,18 +14,19 @@ import (
 )
 
 type gui struct {
-	win   fyne.Window
-	title binding.String
-	// categories           categoryList
-	// accName              string
-	account              Account
-	categoryListBindData binding.ExternalStringList
+	win                   fyne.Window
+	title                 binding.String
+	account               Account
+	categoryListBindData  binding.ExternalStringList
+	cateEntryListBindData binding.ExternalStringList
 }
 
 type Account struct {
-	accName      string
-	password     string //TODO will be removed
-	categoryList []string
+	accName       string
+	password      string //TODO will be removed
+	categoryList  []string
+	selectedCate  string
+	cateEntryList []string
 }
 
 func NewGui(win fyne.Window) *gui {
@@ -33,10 +34,11 @@ func NewGui(win fyne.Window) *gui {
 }
 
 func (g *gui) MakeGUI() {
-	g.makeAppContentView(g.generateLogin)
+	g.bindWindowTitle()
+	g.makeAppContentView(g.generateLoginArea)
 }
 
-func (g *gui) BindWindowTitle() {
+func (g *gui) bindWindowTitle() {
 	g.title.AddListener(binding.NewDataListener(func() {
 		name, _ := g.title.Get()
 		g.win.SetTitle("Password Manager App: " + name)
@@ -92,6 +94,11 @@ func (g *gui) makeAppContentView(entryFunc func() *fyne.Container) {
 
 func (g *gui) setAccount(name string, password string, cateList []string) {
 	g.account = Account{accName: name, password: password, categoryList: cateList}
+}
+
+func (g *gui) updateSelectedCateById(cateId int) {
+	cateName := g.account.categoryList[cateId]
+	g.account.selectedCate = cateName
 }
 
 func (g *gui) ShowAndRun() {
