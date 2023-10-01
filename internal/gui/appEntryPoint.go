@@ -5,10 +5,10 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 
 	"github.com/taofit/golang-password-manager/internal/account"
-	"github.com/taofit/golang-password-manager/internal/category"
 )
 
 func (g *gui) generateLoginArea() *fyne.Container {
@@ -30,6 +30,15 @@ func (g *gui) generateLoginArea() *fyne.Container {
 		// TODO user name and password check, if it is valid, go to the category view
 		// userName.Text
 		// password.Text
+		userName := "good name"
+		password := "superb password"
+		acc, err := account.GetAccount(userName, password)
+		if err != nil {
+			dialog.ShowError(err, g.win)
+			log.Printf("error from fetching account: %s, %s", userName, err)
+			return
+		}
+		g.setAccount(acc.Name, acc.Password, acc.CategoryList)
 		g.makeAppContentView(g.generateCateListArea)
 	})
 
@@ -64,12 +73,11 @@ func (g *gui) generateRegisterArea() *fyne.Container {
 	btn := widget.NewButton("register", func() {
 		name := "good name"
 		password := "superb password"
-		account, err := account.SaveAccount(name, password)
+		acc, err := account.CreateAccount(name, password)
 		if err != nil {
-			log.Println("error from creating account", account, err)
+			log.Println("error from creating account", acc, err)
 		}
-		g.setAccount(account.Name, account.Password, account.CategoryList)
-		category.AddCategories(name)
+		g.setAccount(acc.Name, acc.Password, acc.CategoryList)
 		g.makeAppContentView(g.generateCateListArea)
 	})
 

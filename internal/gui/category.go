@@ -1,7 +1,10 @@
 package gui
 
 import (
+	"errors"
 	"fmt"
+	"log"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -9,6 +12,7 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/taofit/golang-password-manager/internal/account"
 	c "github.com/taofit/golang-password-manager/internal/category"
 )
 
@@ -38,7 +42,7 @@ func (g *gui) generateCategoryList() *widget.List {
 		g.updateSelectedCateById(id)
 		g.makeAppContentView(
 			func() *fyne.Container {
-				return g.generateEntryListArea()
+				return g.generateCateEntryListArea()
 			})
 	}
 
@@ -46,17 +50,28 @@ func (g *gui) generateCategoryList() *widget.List {
 }
 
 func (g *gui) AddCategory() {
-	name := "category name"
-	// category := category{name: "category name", key: "category key"}
-	// g.categories.addCate(category)
-	// popup := widget.NewModalPopUp(widget.NewEntry(), g.win.Canvas())
-	// popup.Show()
-	if isInSlice(g.account.categoryList, name) {
-		dialog.NewError(fmt.Errorf("category '%s' already exists", name), g.win).Show()
-		return
-	}
-	g.categoryListBindData.Append(name)
-	c.AddCategory(g.account.accName, name)
+	name := widget.NewEntry()
+	formContent := []*widget.FormItem{widget.NewFormItem("name", name)}
+	dialog.ShowForm("Add a new category", "Save", "Cancel", formContent, func(b bool) {
+		if !b {
+			return
+		}
+		if strings.TrimSpace(name.Text) == "" {
+			return
+		}
+		if isInSlice(g.account.categoryList, name.Text) {
+			dialog.ShowError(fmt.Errorf("category '%s' already exists", name.Text), g.win)
+			return
+		}
+		g.categoryListBindData.Append(name.Text)
+		c.AddCategory(g.account.accName, name.Text)
+		err := account.UpdateAccount(g.account.accName, g.account.categoryList)
+		if err != nil {
+			errMsg := fmt.Sprintf("error to add category: '%s', message: %s", name.Text, err)
+			dialog.ShowError(errors.New(errMsg), g.win)
+			log.Println(errMsg)
+		}
+	}, g.win)
 }
 
 func isInSlice(slice []string, needle string) bool {

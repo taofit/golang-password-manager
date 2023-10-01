@@ -41,20 +41,25 @@ func (g *gui) MakeGUI() {
 func (g *gui) bindWindowTitle() {
 	g.title.AddListener(binding.NewDataListener(func() {
 		name, _ := g.title.Get()
-		g.win.SetTitle("Password Manager App: " + name)
+		g.win.SetTitle("Pass Portal: " + name)
 	}))
 }
 
-func makeBanner() fyne.CanvasObject {
-	toolbar := widget.NewToolbar(
+func (g *gui) makeBanner() fyne.CanvasObject {
+	toolbar := widget.NewToolbar( //on mobile it shows the burger menu, on desktop is will show on system tray and will not appear in the app area
 		widget.NewToolbarAction(theme.MenuIcon(), func() {
 			log.Println("toolbar icon is clicked")
 		}),
 	)
 	logo := canvas.NewImageFromResource(resourceLogoPng)
 	logo.FillMode = canvas.ImageFillContain
+	logo.SetMinSize(fyne.NewSize(30, 30))
 
-	return container.NewStack(toolbar, container.NewPadded(logo))
+	title := widget.NewLabelWithData(g.title)
+	logoWithTitle := container.NewCenter(container.NewBorder(nil, nil, container.NewPadded(logo), title))
+
+	// return container.NewStack(toolbar, container.NewPadded(logo))
+	return container.NewBorder(nil, nil, toolbar, nil, logoWithTitle)
 }
 
 func (g *gui) openFolderDialog() {
@@ -85,7 +90,7 @@ func (g *gui) MakeMenu() *fyne.MainMenu {
 }
 
 func (g *gui) makeAppContentView(entryFunc func() *fyne.Container) {
-	top := makeBanner()
+	top := g.makeBanner()
 	content := container.NewStack()
 	content.Objects = []fyne.CanvasObject{canvas.NewRectangle(color.Gray{Y: 0xEE}), entryFunc()}
 

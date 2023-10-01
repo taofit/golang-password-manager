@@ -77,7 +77,7 @@ func SaveCateEntry(accName, cateName, entryName string) error {
 	}
 	defer w.Close()
 
-	err = json.NewEncoder(w).Encode("entryName by dit")
+	err = json.NewEncoder(w).Encode("here it goes struct that contains fields like name, password, url, message etc")
 
 	return err
 }

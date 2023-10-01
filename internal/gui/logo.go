@@ -8,7 +8,7 @@ import (
 func getLogo() *canvas.Image {
 	logo := canvas.NewImageFromResource(resourceLogoPng)
 	logo.FillMode = canvas.ImageFillContain
-	logo.SetMinSize(fyne.NewSize(100, 100))
+	logo.SetMinSize(fyne.NewSize(120, 120))
 
 	return logo
 }

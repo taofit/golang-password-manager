@@ -27,28 +27,61 @@ func newAccountWithCateList(name string, password string, categoryList []string)
 	return account{Name: name, Password: password, CategoryList: category.DefaultCateList} //TODO fetch categorylist from the storage
 }
 
-func SaveAccount(name string, password string) (account, error) {
-	acc := account{}
+func getAccountWriter(name string) (fyne.URIWriteCloser, error) {
 	accFileURI, err := getAccountURI(name)
 	if err != nil {
-		return acc, err
+		return nil, err
 	}
 	ok, err := storage.CanWrite(accFileURI)
 	if err != nil {
-		return acc, err
+		return nil, err
 	}
 	if !ok {
-		return acc, fmt.Errorf("can not write to file: %s", accFileURI)
+		return nil, fmt.Errorf("can not write to file: %s", accFileURI)
 	}
 	w, err := storage.Writer(accFileURI)
+	if err != nil {
+		return nil, err
+	}
+
+	return w, err
+}
+
+func CreateAccount(name string, password string) (account, error) {
+	acc := account{}
+	w, err := getAccountWriter(name)
+	if err != nil {
+		return acc, err
+	}
+	acc = newAccount(name, password)
+	err = json.NewEncoder(w).Encode(acc)
 	if err != nil {
 		return acc, err
 	}
 	defer w.Close()
-	acc = newAccount(name, password)
-	err = json.NewEncoder(w).Encode(acc)
+	err = category.AddCategories(name)
 
 	return acc, err
+}
+
+func UpdateAccount(name string, categoryList []string) error {
+	acc, err := GetAccount(name, "")
+	if err != nil {
+		return err
+	}
+	w, err := getAccountWriter(name)
+	if err != nil {
+		return err
+	}
+	acc.CategoryList = categoryList
+
+	err = json.NewEncoder(w).Encode(acc)
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+
+	return nil
 }
 
 func getAccountURI(name string) (fyne.URI, error) {
@@ -67,7 +100,7 @@ func getAccountURI(name string) (fyne.URI, error) {
 	return accFileURI, nil
 }
 
-func GetAccount(name string) (account, error) {
+func GetAccount(name string, password string) (account, error) {
 	acc := account{}
 	accFileURI, err := getAccountURI(name)
 	if err != nil {

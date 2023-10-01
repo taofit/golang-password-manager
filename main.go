@@ -7,10 +7,6 @@ import (
 	"github.com/taofit/golang-password-manager/internal/gui"
 )
 
-type me struct {
-	mehehe string
-}
-
 func main() {
 	a := app.NewWithID("com.passportal.app")
 	a.Settings().SetTheme(gui.NewAppTheme())
